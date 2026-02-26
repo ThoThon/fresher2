@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../category/controller/category_controller.dart';
-import '../../category/models/category_model.dart';
+import '../../category/entities/category.dart';
 import '../../routes/app_routes.dart';
 import '../models/product_model.dart';
 import '../repositories/product_repository.dart';
@@ -25,7 +25,7 @@ class ProductController extends GetxController {
   var selectedCategoryId = Rxn<int>();
   var currentPage = 1.obs;
 
-  List<CategoryModel> get categories => categoryController.categories;
+  List<Category> get categories => categoryController.categories;
   Timer? _debounce;
 
   @override

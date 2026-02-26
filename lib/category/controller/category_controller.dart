@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:fresher_demo_2/category/models/category_model.dart';
+import 'package:fresher_demo_2/category/entities/category.dart';
 import 'package:fresher_demo_2/category/repositories/category_repository.dart';
 import 'package:get/get.dart';
 
 class CategoryController extends GetxController {
-  final CategoryRepository _repo = CategoryRepository();
+  final CategoryRepository _repo;
+  CategoryController(this._repo);
+
   final nameController = TextEditingController();
 
-  var categories = <CategoryModel>[].obs;
+  Category? editingCategory;
+
+  var categories = <Category>[].obs;
   var isLoading = false.obs;
 
   @override
   void onInit() {
-    fetchCategories();
     super.onInit();
-  }
+    fetchCategories();
 
-  void setFields(String? name) {
-    nameController.text = name ?? "";
+    if (Get.arguments != null && Get.arguments is Category) {
+      editingCategory = Get.arguments;
+      nameController.text = editingCategory?.name ?? "";
+    }
   }
 
   void fetchCategories() async {

@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../controller/category_controller.dart';
-import '../models/category_model.dart';
 
 class CategoryFormScreen extends GetView<CategoryController> {
-  final CategoryModel? category;
-  const CategoryFormScreen({super.key, this.category});
+  const CategoryFormScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isEdit = category != null;
-
-    controller.setFields(category?.name);
+    final isEdit = controller.editingCategory != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -20,6 +16,10 @@ class CategoryFormScreen extends GetView<CategoryController> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,10 +57,11 @@ class CategoryFormScreen extends GetView<CategoryController> {
 
                           bool success = isEdit
                               ? await controller.updateCategory(
-                                  category!.id, name)
+                                  controller.editingCategory!.id, name)
                               : await controller.addCategory(name);
 
                           if (success) {
+                            // Quay về Home và chuyển sang tab category (index 1)
                             Get.offAllNamed(
                               Routes.home,
                               arguments: {'initialTab': 1},
@@ -68,7 +69,12 @@ class CategoryFormScreen extends GetView<CategoryController> {
                           }
                         },
                   child: controller.isLoading.value
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2),
+                        )
                       : Text(isEdit ? "CẬP NHẬT" : "LƯU DANH MỤC",
                           style: const TextStyle(
                               color: Colors.white,
