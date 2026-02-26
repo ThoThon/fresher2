@@ -5,17 +5,16 @@ class ApiInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final box = Hive.box('settings');
-    final String? token = box.get('token'); // Dùng key 'token'
+    final String? token = box.get('token');
 
     if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token'; // Giống Postman
+      options.headers['Authorization'] = 'Bearer $token';
     }
     return handler.next(options);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // Tự động lưu token khi gọi API login thành công
     if (response.requestOptions.path.contains('/login') &&
         response.statusCode == 200) {
       final token = response.data['data']['access_token'];

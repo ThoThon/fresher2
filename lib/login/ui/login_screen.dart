@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fresher_demo_2/login/ui/widgets/footer_button.dart';
 import 'package:fresher_demo_2/login/ui/widgets/input_field.dart';
