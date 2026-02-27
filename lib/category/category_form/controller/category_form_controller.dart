@@ -10,7 +10,7 @@ class CategoryFormController extends GetxController {
 
   final nameController = TextEditingController();
   Category? editingCategory;
-  var isLoading = false.obs;
+  final isLoading = false.obs;
 
   @override
   void onInit() {

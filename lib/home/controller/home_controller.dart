@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 
 class HomeController extends GetxController {
-  var currentIndex = 0.obs;
+  final currentIndex = 0.obs;
 
   @override
   void onInit() {

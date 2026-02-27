@@ -7,8 +7,8 @@ class CategoryController extends GetxController {
   final CategoryRepository _repo;
   CategoryController(this._repo);
 
-  var categories = <Category>[].obs;
-  var isLoading = false.obs;
+  final categories = <Category>[].obs;
+  final isLoading = false.obs;
 
   @override
   void onInit() {

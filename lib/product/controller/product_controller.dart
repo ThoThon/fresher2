@@ -19,11 +19,11 @@ class ProductController extends GetxController {
   final selectedFormCategoryId = RxnInt();
   final formKey = GlobalKey<FormState>();
 
-  var products = <ProductModel>[].obs;
-  var isLoading = false.obs;
-  var searchQuery = "".obs;
-  var selectedCategoryId = Rxn<int>();
-  var currentPage = 1.obs;
+  final products = <ProductModel>[].obs;
+  final isLoading = false.obs;
+  final searchQuery = "".obs;
+  final selectedCategoryId = Rxn<int>();
+  final currentPage = 1.obs;
 
   List<Category> get categories => categoryController.categories;
   Timer? _debounce;
