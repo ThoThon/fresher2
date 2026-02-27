@@ -2,15 +2,7 @@ import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 
 class HomeController extends GetxController {
-  var currentIndex = 0.obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    if (Get.arguments != null && Get.arguments['initialTab'] != null) {
-      currentIndex.value = Get.arguments['initialTab'];
-    }
-  }
+  final currentIndex = 0.obs;
 
   void changeTab(int index) => currentIndex.value = index;
 
@@ -18,7 +10,7 @@ class HomeController extends GetxController {
     if (currentIndex.value == 0) {
       Get.toNamed(Routes.product);
     } else {
-      Get.toNamed(Routes.category);
+      Get.toNamed(Routes.categoryForm);
     }
   }
 }
