@@ -6,7 +6,9 @@ import '../controller/product_controller.dart';
 class ProductBinding extends Bindings {
   @override
   void dependencies() {
+    Get.lazyPut<CategoryRepository>(() => CategoryRepository());
     Get.lazyPut<ProductController>(() => ProductController());
-    Get.lazyPut<CategoryController>(() => CategoryController(Get.find<CategoryRepository>()));
+    Get.lazyPut<CategoryController>(
+        () => CategoryController(Get.find<CategoryRepository>()));
   }
 }

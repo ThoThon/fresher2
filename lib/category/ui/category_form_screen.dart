@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../routes/app_routes.dart';
-import '../controller/category_controller.dart';
+import '../controller/category_form_controller.dart';
 
-class CategoryFormScreen extends GetView<CategoryController> {
-  const CategoryFormScreen({super.key});
+class CategoryFormScreen extends GetView<CategoryFormController> {
+   const CategoryFormScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,26 +47,7 @@ class CategoryFormScreen extends GetView<CategoryController> {
                   ),
                   onPressed: controller.isLoading.value
                       ? null
-                      : () async {
-                          final name = controller.nameController.text.trim();
-                          if (name.isEmpty) {
-                            Get.snackbar("Lỗi", "Vui lòng nhập tên");
-                            return;
-                          }
-
-                          bool success = isEdit
-                              ? await controller.updateCategory(
-                                  controller.editingCategory!.id, name)
-                              : await controller.addCategory(name);
-
-                          if (success) {
-                            // Quay về Home và chuyển sang tab category (index 1)
-                            Get.offAllNamed(
-                              Routes.home,
-                              arguments: {'initialTab': 1},
-                            );
-                          }
-                        },
+                      : () => controller.submitForm(),
                   child: controller.isLoading.value
                       ? const SizedBox(
                           height: 20,
@@ -75,10 +55,11 @@ class CategoryFormScreen extends GetView<CategoryController> {
                           child: CircularProgressIndicator(
                               color: Colors.white, strokeWidth: 2),
                         )
-                      : Text(isEdit ? "CẬP NHẬT" : "LƯU DANH MỤC",
+                      : Text(
+                          isEdit ? "CẬP NHẬT" : "LƯU DANH MỤC",
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                 )),
           ],
         ),

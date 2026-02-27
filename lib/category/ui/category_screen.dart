@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../routes/app_routes.dart';
 import '../controller/category_controller.dart';
-import 'category_form_screen.dart';
 
 class CategoryScreen extends GetView<CategoryController> {
   const CategoryScreen({super.key});
@@ -9,7 +9,6 @@ class CategoryScreen extends GetView<CategoryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Obx(() {
         if (controller.isLoading.value && controller.categories.isEmpty) {
           return const Center(
@@ -39,10 +38,15 @@ class CategoryScreen extends GetView<CategoryController> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => Get.to(
-                          () => const CategoryFormScreen(),
-                          arguments: cat,
-                        ),
+                        onPressed: () async {
+                          var result = await Get.toNamed(
+                            Routes.category,
+                            arguments: cat,
+                          );
+                          if (result == true) {
+                            controller.fetchCategories();
+                          }
+                        },
                       ),
                       IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
