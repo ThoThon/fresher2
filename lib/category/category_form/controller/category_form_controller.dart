@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../entities/category.dart';
-import '../repositories/category_repository.dart';
+import '../../entities/category.dart';
+import '../repositories/category_form_repository.dart';
 
 class CategoryFormController extends GetxController {
-  final CategoryRepository _repo;
+  final CategoryFormRepository _repo;
   final Category? initialCategory;
   CategoryFormController(this._repo, {this.initialCategory});
 

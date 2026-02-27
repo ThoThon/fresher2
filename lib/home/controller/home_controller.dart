@@ -18,7 +18,7 @@ class HomeController extends GetxController {
     if (currentIndex.value == 0) {
       Get.toNamed(Routes.product);
     } else {
-      Get.toNamed(Routes.category);
+      Get.toNamed(Routes.categoryForm);
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../entities/category.dart';
+import '../../entities/category.dart';
 import '../repositories/category_repository.dart';
 
 class CategoryController extends GetxController {

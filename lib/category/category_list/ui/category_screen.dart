@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../routes/app_routes.dart';
+import '../../../routes/app_routes.dart';
 import '../controller/category_controller.dart';
 
 class CategoryScreen extends GetView<CategoryController> {
@@ -40,7 +40,7 @@ class CategoryScreen extends GetView<CategoryController> {
                         icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () async {
                           var result = await Get.toNamed(
-                            Routes.category,
+                            Routes.categoryForm,
                             arguments: cat,
                           );
                           if (result == true) {

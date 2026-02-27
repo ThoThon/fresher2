@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../category/controller/category_controller.dart';
+import '../../category/category_list/controller/category_controller.dart';
 import '../../category/entities/category.dart';
 import '../../routes/app_routes.dart';
 import '../models/product_model.dart';

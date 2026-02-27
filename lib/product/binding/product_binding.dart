@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import '../../category/controller/category_controller.dart';
-import '../../category/repositories/category_repository.dart';
+import '../../category/category_list/controller/category_controller.dart';
+import '../../category/category_list/repositories/category_repository.dart';
 import '../controller/product_controller.dart';
 
 class ProductBinding extends Bindings {

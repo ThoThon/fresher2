@@ -1,7 +1,7 @@
-import '../../core/network/api_client.dart';
-import '../../core/network/base_response_list.dart';
-import '../../core/network/base_response.dart'; 
-import '../models/category_model.dart';
+import '../../../core/network/api_client.dart';
+import '../../../core/network/base_response_list.dart';
+import '../../../core/network/base_response.dart'; 
+import '../../models/category_model.dart';
 
 class CategoryRepository {
   final ApiClient _apiClient = ApiClient();
