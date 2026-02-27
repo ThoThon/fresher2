@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/product_controller.dart';
-import 'product_screen.dart';
+import '../../../routes/app_routes.dart'; 
+import '../controller/product_list_controller.dart';
 
-class ProductListScreen extends GetView<ProductController> {
+class ProductListScreen extends GetView<ProductListController> {
   const ProductListScreen({super.key});
 
   @override
@@ -35,11 +35,8 @@ class ProductListScreen extends GetView<ProductController> {
                   itemCount: controller.categories.length + 1,
                   itemBuilder: (context, index) {
                     final isAll = index == 0;
-                    final label = isAll
-                        ? "Tất cả"
-                        : controller.categories[index - 1].name;
+                    final label = isAll ? "Tất cả" : controller.categories[index - 1].name;
                     final id = isAll ? null : controller.categories[index - 1].id;
-                    
                     final isSelected = controller.selectedCategoryId.value == id;
 
                     return GestureDetector(
@@ -49,9 +46,7 @@ class ProductListScreen extends GetView<ProductController> {
                         margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? const Color(0xFFf24e1e) 
-                              : Colors.grey[200],
+                          color: isSelected ? const Color(0xFFf24e1e) : Colors.grey[200],
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: Text(
@@ -70,8 +65,7 @@ class ProductListScreen extends GetView<ProductController> {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.products.isEmpty) {
-                return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFFf24e1e)));
+                return const Center(child: CircularProgressIndicator(color: Color(0xFFf24e1e)));
               }
               
               return RefreshIndicator(
@@ -91,22 +85,14 @@ class ProductListScreen extends GetView<ProductController> {
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => const Icon(Icons.image),
                         ),
-                        title: Text(
-                          product.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          "Giá: \$${product.price} - Kho: ${product.stock}",
-                        ),
+                        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Giá: \$${product.price} - Kho: ${product.stock}"),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () {
-                                controller.prepareForm(product);
-                                Get.to(() => ProductFormScreen(product: product));
-                              },
+                              onPressed: () => _goToForm(product: product),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
@@ -124,5 +110,12 @@ class ProductListScreen extends GetView<ProductController> {
         ],
       ),
     );
+  }
+
+  void _goToForm({dynamic product}) async {
+    final result = await Get.toNamed(Routes.productForm, arguments: product);
+    if (result == true) {
+      controller.refreshProducts();
+    }
   }
 }

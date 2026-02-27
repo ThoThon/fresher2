@@ -7,8 +7,10 @@ import '../home/binding/home_binding.dart';
 import '../home/ui/home_screen.dart';
 import '../login/binding/login_binding.dart';
 import '../login/ui/login_screen.dart';
-import '../product/binding/product_binding.dart';
-import '../product/ui/product_screen.dart';
+import '../product/product_form/binding/product_form_binding.dart';
+import '../product/product_form/ui/product_screen.dart';
+import '../product/product_list/binding/product_list_binding.dart';
+import '../product/product_list/ui/product_list_screen.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -24,9 +26,14 @@ class AppPages {
       binding: HomeBinding(),
     ),
     GetPage(
-      name: Routes.product,
+      name: Routes.productList,
+      page: () => const ProductListScreen(),
+      binding: ProductListBinding(),
+    ),
+    GetPage(
+      name: Routes.productForm,
       page: () => const ProductFormScreen(),
-      binding: ProductBinding(),
+      binding: ProductFormBinding(),
     ),
     GetPage(
       name: Routes.category,
@@ -36,7 +43,7 @@ class AppPages {
     GetPage(
       name: Routes.categoryForm,
       page: () => const CategoryFormScreen(),
-      binding: CategoryFormBinding(), 
+      binding: CategoryFormBinding(),
     ),
   ];
 }

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/product_controller.dart';
-import '../models/product_model.dart';
+import '../controller/product_form_controller.dart';
 
-class ProductFormScreen extends GetView<ProductController> {
-  final ProductModel? product;
-  const ProductFormScreen({super.key, this.product});
+class ProductFormScreen extends GetView<ProductFormController> {
+  const ProductFormScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    controller.prepareForm(product);
+    final isEdit = controller.initialProduct != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(product == null ? "Thêm sản phẩm" : "Sửa sản phẩm"),
+        title: Text(isEdit ? "Sửa sản phẩm" : "Thêm sản phẩm"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -85,13 +83,15 @@ class ProductFormScreen extends GetView<ProductController> {
                 ),
                 onPressed: controller.isLoading.value
                     ? null
-                    : () => product == null
-                        ? controller.addProduct()
-                        : controller.updateProduct(product!.id),
+                    : () => controller.submitForm(),
                 child: controller.isLoading.value
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("LƯU SẢN PHẨM",
-                        style: TextStyle(
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : Text(isEdit ? "CẬP NHẬT" : "LƯU SẢN PHẨM",
+                        style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
