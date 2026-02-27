@@ -4,14 +4,6 @@ import '../../routes/app_routes.dart';
 class HomeController extends GetxController {
   final currentIndex = 0.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    if (Get.arguments != null && Get.arguments['initialTab'] != null) {
-      currentIndex.value = Get.arguments['initialTab'];
-    }
-  }
-
   void changeTab(int index) => currentIndex.value = index;
 
   void onFabPressed() {
