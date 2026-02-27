@@ -1,28 +1,39 @@
 import 'dart:async';
-import 'package:fresher_demo_2/product/entities/product.dart';
 import 'package:get/get.dart';
-import '../../../category/category_list/controller/category_controller.dart';
+import '../../../category/category_list/repositories/category_repository.dart';
 import '../../../category/entities/category.dart';
+import '../../entities/product.dart';
 import '../repositories/product_list_repository.dart';
 
 class ProductListController extends GetxController {
-  final ProductListRepository _repository = ProductListRepository();
+  final ProductListRepository _productRepo;
+  final CategoryRepository _categoryRepo;
 
-  CategoryController get categoryController => Get.find<CategoryController>();
+  ProductListController(this._productRepo, this._categoryRepo);
 
   final products = <Product>[].obs;
+  final categories = <Category>[].obs;
   final isLoading = false.obs;
   final searchQuery = "".obs;
   final selectedCategoryId = Rxn<int>();
   final currentPage = 1.obs;
 
-  List<Category> get categories => categoryController.categories;
   Timer? _debounce;
 
   @override
   void onInit() {
     super.onInit();
+    fetchCategories();
     fetchProducts();
+  }
+
+  Future<void> fetchCategories() async {
+    try {
+      final result = await _categoryRepo.getCategories();
+      categories.assignAll(result);
+    } catch (e) {
+      Get.snackbar("Lỗi", "Không thể tải danh sách danh mục");
+    }
   }
 
   Future<void> fetchProducts({bool isRefresh = false}) async {
@@ -31,7 +42,7 @@ class ProductListController extends GetxController {
     }
     isLoading.value = true;
     try {
-      var result = await _repository.getProducts(
+      var result = await _productRepo.getProducts(
         page: currentPage.value,
         keyword: searchQuery.value,
         categoryId: selectedCategoryId.value,
@@ -69,7 +80,7 @@ class ProductListController extends GetxController {
       textCancel: "Hủy",
       onConfirm: () async {
         Get.back();
-        bool success = await _repository.deleteProduct(id);
+        bool success = await _productRepo.deleteProduct(id);
         if (success) {
           products.removeWhere((p) => p.id == id);
           Get.snackbar("Thành công", "Đã xóa sản phẩm");

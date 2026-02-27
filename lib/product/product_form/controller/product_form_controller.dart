@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../category/category_list/repositories/category_repository.dart';
+
 import '../../../category/entities/category.dart';
 import '../../models/product_model.dart';
 import '../repositories/product_form_repository.dart';
@@ -7,10 +9,10 @@ import '../repositories/product_form_repository.dart';
 class ProductFormController extends GetxController {
   final ProductFormRepository _repository;
   final ProductModel? initialProduct;
-  final List<Category> categories;
+  final CategoryRepository _categoryRepo;
 
-  ProductFormController(this._repository,
-      {this.initialProduct, required this.categories});
+  ProductFormController(this._repository, this._categoryRepo,
+      {this.initialProduct});
 
   final formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
@@ -22,11 +24,25 @@ class ProductFormController extends GetxController {
 
   final isLoading = false.obs;
 
+  final categories = <Category>[].obs;
+
   @override
   void onInit() {
     super.onInit();
+    fetchCategories();
     if (initialProduct != null) {
       _prepareForm(initialProduct!);
+    }
+  }
+
+  Future<void> fetchCategories() async {
+    try {
+      final result = await _categoryRepo.getCategories();
+      categories.assignAll(result);
+    } catch (e) {
+      Get.snackbar("Lỗi", "Không thể tải danh sách danh mục");
+    } finally {
+      isLoading.value = false;
     }
   }
 
