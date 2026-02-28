@@ -8,7 +8,7 @@ class HomeController extends GetxController {
 
   void onFabPressed() {
     if (currentIndex.value == 0) {
-      Get.toNamed(Routes.product);
+      Get.toNamed(Routes.productForm);
     } else {
       Get.toNamed(Routes.categoryForm);
     }

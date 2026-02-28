@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fresher_demo_2/product/entities/product.dart';
 import 'package:get/get.dart';
-import '../controller/product_controller.dart';
-import 'product_screen.dart';
+import '../../../routes/app_routes.dart';
+import '../controller/product_list_controller.dart';
 
-class ProductListScreen extends GetView<ProductController> {
+class ProductListScreen extends GetView<ProductListController> {
   const ProductListScreen({super.key});
 
   @override
@@ -26,7 +27,6 @@ class ProductListScreen extends GetView<ProductController> {
               ),
             ),
           ),
-
           SizedBox(
             height: 50,
             child: Obx(() => ListView.builder(
@@ -38,19 +38,21 @@ class ProductListScreen extends GetView<ProductController> {
                     final label = isAll
                         ? "Tất cả"
                         : controller.categories[index - 1].name;
-                    final id = isAll ? null : controller.categories[index - 1].id;
-                    
-                    final isSelected = controller.selectedCategoryId.value == id;
+                    final id =
+                        isAll ? null : controller.categories[index - 1].id;
+                    final isSelected =
+                        controller.selectedCategoryId.value == id;
 
                     return GestureDetector(
                       onTap: () => controller.filterByCategory(id),
                       child: Container(
                         alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 8),
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? const Color(0xFFf24e1e) 
+                          color: isSelected
+                              ? const Color(0xFFf24e1e)
                               : Colors.grey[200],
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -58,7 +60,9 @@ class ProductListScreen extends GetView<ProductController> {
                           label,
                           style: TextStyle(
                             color: isSelected ? Colors.white : Colors.black87,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -66,20 +70,28 @@ class ProductListScreen extends GetView<ProductController> {
                   },
                 )),
           ),
-
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.products.isEmpty) {
                 return const Center(
                     child: CircularProgressIndicator(color: Color(0xFFf24e1e)));
               }
-              
+
               return RefreshIndicator(
                 onRefresh: () => controller.refreshProducts(),
                 child: ListView.builder(
+                  controller: controller.scrollController,
                   padding: const EdgeInsets.all(12),
-                  itemCount: controller.products.length,
+                  itemCount: controller.products.length +
+                      (controller.hasMore.value ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index == controller.products.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                      );
+                    }
                     final product = controller.products[index];
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
@@ -91,26 +103,22 @@ class ProductListScreen extends GetView<ProductController> {
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => const Icon(Icons.image),
                         ),
-                        title: Text(
-                          product.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        title: Text(product.name,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text(
-                          "Giá: \$${product.price} - Kho: ${product.stock}",
-                        ),
+                            "Giá: \$${product.price} - Kho: ${product.stock}"),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () {
-                                controller.prepareForm(product);
-                                Get.to(() => ProductFormScreen(product: product));
-                              },
+                              onPressed: () => _goToForm(product: product),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => controller.confirmDelete(product.id),
+                              onPressed: () =>
+                                  controller.confirmDelete(product.id),
                             ),
                           ],
                         ),
@@ -124,5 +132,12 @@ class ProductListScreen extends GetView<ProductController> {
         ],
       ),
     );
+  }
+
+  void _goToForm({Product? product}) async {
+    final result = await Get.toNamed(Routes.productForm, arguments: product);
+    if (result == true) {
+      controller.refreshProducts();
+    }
   }
 }

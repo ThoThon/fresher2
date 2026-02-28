@@ -1,54 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:fresher_demo_2/core/network/api_client.dart';
 import 'package:get/get.dart';
-import 'package:fresher_demo_2/routes/app_routes.dart';
+
+import '../../routes/app_routes.dart';
+import '../models/login_request.dart';
+import '../repositories/login_repository.dart';
 
 class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
-  final TextEditingController taxController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  final ApiClient _apiClient = ApiClient();
+  final AuthRepository _authRepository = AuthRepository();
 
-  Future<bool> login() async {
+  Future<void> onLoginPressed() async {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+
     isLoading.value = true;
     errorMessage.value = '';
 
     try {
-      // Dữ liệu truyền đi
-      final Map<String, dynamic> loginData = {
-        "username": usernameController.text.trim(),
-        "password": passwordController.text.trim(),
-      };
+      final request = LoginRequest(
+        username: usernameController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      final success = await _authRepository.login(request);
 
-      final response = await _apiClient.dio.post('/login', data: loginData);
-
-      return response.statusCode == 200;
+      if (success) {
+        Get.offAllNamed(Routes.home);
+      } else {
+        _showErrorDialog();
+      }
     } catch (e) {
-      errorMessage.value =
-          "Thông tin đăng nhập không chính xác hoặc lỗi kết nối";
-      return false;
+      _showErrorDialog();
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  Future<void> onLoginPressed() async {
-    if (!(formKey.currentState?.validate() ?? false)) {
-      return;
-    }
-
-    final success = await login();
-
-    if (success) {
-      Get.offAllNamed(Routes.home);
-    } else {
-      _showErrorDialog();
     }
   }
 
@@ -69,7 +58,6 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    taxController.dispose();
     usernameController.dispose();
     passwordController.dispose();
     super.onClose();
