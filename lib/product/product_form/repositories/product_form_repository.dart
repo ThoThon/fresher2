@@ -13,12 +13,12 @@ class ProductFormRepository {
 
     final baseResponse = BaseResponse.fromJson(response.data);
 
-    return baseResponse.data != null;
+    return baseResponse.data ?? false;
   }
 
-  Future<bool> updateProduct(ProductRequest data) async {
+  Future<bool> updateProduct(int id, ProductRequest data) async {
     final response = await _apiClient.dio.put(
-      '/products/${data.id}',
+      '/products/$id',
       data: data.toJson(),
     );
 

@@ -58,7 +58,6 @@ class ProductFormController extends GetxController {
 
   ProductRequest _getFormData() {
     return ProductRequest(
-      id: initialProduct?.id,
       name: nameController.text.trim(),
       code: codeController.text.trim(),
       price: double.tryParse(priceController.text) ?? 0.0,
@@ -76,8 +75,10 @@ class ProductFormController extends GetxController {
     isLoading.value = true;
     try {
       bool success;
-      if (initialProduct != null) {
-        success = await _repository.updateProduct(_getFormData());
+      final product = initialProduct;
+
+      if (product != null) {
+        success = await _repository.updateProduct(product.id, _getFormData());
       } else {
         success = await _repository.createProduct(_getFormData());
       }
@@ -86,9 +87,7 @@ class ProductFormController extends GetxController {
         Get.back(result: true);
         Get.snackbar(
           "Thành công",
-          initialProduct != null
-              ? "Đã cập nhật sản phẩm"
-              : "Đã thêm sản phẩm mới",
+          product != null ? "Đã cập nhật sản phẩm" : "Đã thêm sản phẩm mới",
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );

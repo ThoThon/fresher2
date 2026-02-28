@@ -31,12 +31,12 @@ class CategoryFormController extends GetxController {
 
     isLoading.value = true;
     try {
+      final request = CategoryRequest(name: name);
       bool success;
       if (editingCategory != null) {
-        final request = CategoryRequest(id: editingCategory!.id, name: name);
-        success = await _repo.updateCategory(request);
+        success = await _repo.updateCategory(editingCategory!.id, request);
       } else {
-        success = await _repo.createCategory(CategoryRequest(name: name));
+        success = await _repo.createCategory(request);
       }
 
       if (success) {

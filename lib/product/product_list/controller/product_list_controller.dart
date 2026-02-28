@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../../../category/category_list/repositories/category_repository.dart';
 import '../../../category/entities/category.dart';
@@ -14,17 +15,28 @@ class ProductListController extends GetxController {
   final products = <Product>[].obs;
   final categories = <Category>[].obs;
   final isLoading = false.obs;
+  final isLoadMore = false.obs;
   final searchQuery = "".obs;
   final selectedCategoryId = Rxn<int>();
   final currentPage = 1.obs;
+  final hasMore = true.obs;
+  final scrollController = ScrollController();
 
   Timer? _debounce;
 
   @override
   void onInit() {
     super.onInit();
+    scrollController.addListener(_onScroll);
     fetchCategories();
-    fetchProducts();
+    fetchProducts(isRefresh: true);
+  }
+
+  void _onScroll() {
+    if (scrollController.position.atEdge &&
+        scrollController.position.pixels > 0) {
+      loadMore();
+    }
   }
 
   Future<void> fetchCategories() async {
@@ -39,23 +51,33 @@ class ProductListController extends GetxController {
   Future<void> fetchProducts({bool isRefresh = false}) async {
     if (isRefresh) {
       currentPage.value = 1;
+      hasMore.value = true;
+      isLoading.value = true;
+    } else {
+      isLoadMore.value = true;
     }
-    isLoading.value = true;
+
     try {
       var result = await _productRepo.getProducts(
         page: currentPage.value,
         keyword: searchQuery.value,
         categoryId: selectedCategoryId.value,
       );
+
       if (isRefresh) {
         products.assignAll(result);
       } else {
         products.addAll(result);
       }
+
+      if (result.length < 10) {
+        hasMore.value = false;
+      }
     } catch (e) {
       Get.snackbar("Lỗi", "Không thể tải danh sách sản phẩm");
     } finally {
       isLoading.value = false;
+      isLoadMore.value = false;
     }
   }
 
@@ -71,6 +93,15 @@ class ProductListController extends GetxController {
       fetchProducts(isRefresh: true);
     });
   }
+
+  void loadMore() {
+    if (!isLoading.value && !isLoadMore.value && hasMore.value) {
+      currentPage.value++;
+      fetchProducts();
+    }
+  }
+
+  Future<void> refreshProducts() async => await fetchProducts(isRefresh: true);
 
   void confirmDelete(int id) {
     Get.defaultDialog(
@@ -89,11 +120,10 @@ class ProductListController extends GetxController {
     );
   }
 
-  Future<void> refreshProducts() async => await fetchProducts(isRefresh: true);
-
   @override
   void onClose() {
     _debounce?.cancel();
+    scrollController.dispose();
     super.onClose();
   }
 }

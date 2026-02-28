@@ -1,5 +1,4 @@
 class ProductRequest {
-  final int? id;
   final String name;
   final String code;
   final double price;
@@ -9,7 +8,6 @@ class ProductRequest {
   final String image;
 
   ProductRequest({
-    this.id,
     required this.name,
     required this.code,
     required this.price,

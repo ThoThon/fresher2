@@ -7,14 +7,13 @@ import '../repositories/product_form_repository.dart';
 class ProductFormBinding extends Bindings {
   @override
   void dependencies() {
-    final repository = ProductFormRepository();
     final ProductModel? product = Get.arguments;
 
     Get.lazyPut<ProductFormController>(
       () => ProductFormController(
-        repository,
+        ProductFormRepository(),
+        CategoryRepository(),
         initialProduct: product,
-        Get.put(CategoryRepository()),
       ),
     );
   }

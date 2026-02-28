@@ -11,12 +11,13 @@ class CategoryFormRepository {
       data: data.toJson(),
     );
     final baseResponse = BaseResponse.fromJson(response.data);
-    return baseResponse.data != null;
+
+    return baseResponse.data ?? false;
   }
 
-  Future<bool> updateCategory(CategoryRequest data) async {
+  Future<bool> updateCategory(int id, CategoryRequest data) async {
     final response = await _apiClient.dio.put(
-      '/categories/${data.id}',
+      '/categories/$id',
       data: data.toJson(),
     );
     final baseResponse = BaseResponse<bool>.fromJson(

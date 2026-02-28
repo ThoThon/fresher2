@@ -80,9 +80,18 @@ class ProductListScreen extends GetView<ProductListController> {
               return RefreshIndicator(
                 onRefresh: () => controller.refreshProducts(),
                 child: ListView.builder(
+                  controller: controller.scrollController,
                   padding: const EdgeInsets.all(12),
-                  itemCount: controller.products.length,
+                  itemCount: controller.products.length +
+                      (controller.hasMore.value ? 1 : 0),
                   itemBuilder: (context, index) {
+                    if (index == controller.products.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                      );
+                    }
                     final product = controller.products[index];
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
