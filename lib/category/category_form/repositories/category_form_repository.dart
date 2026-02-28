@@ -1,22 +1,23 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/base_response.dart';
+import '../../models/category_request.dart';
 
 class CategoryFormRepository {
   final ApiClient _apiClient = ApiClient();
 
-  Future<bool> createCategory(String name) async {
+  Future<bool> createCategory(CategoryRequest data) async {
     final response = await _apiClient.dio.post(
       '/categories',
-      data: {'name': name},
+      data: data.toJson(),
     );
     final baseResponse = BaseResponse.fromJson(response.data);
     return baseResponse.data != null;
   }
 
-  Future<bool> updateCategory(int id, String name) async {
+  Future<bool> updateCategory(CategoryRequest data) async {
     final response = await _apiClient.dio.put(
-      '/categories/$id',
-      data: {'name': name},
+      '/categories/${data.id}',
+      data: data.toJson(),
     );
     final baseResponse = BaseResponse<bool>.fromJson(
       response.data,

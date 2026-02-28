@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fresher_demo_2/core/network/api_client.dart';
 import 'package:get/get.dart';
-import 'package:fresher_demo_2/routes/app_routes.dart';
+
+import '../../routes/app_routes.dart';
+import '../repositories/login_repository.dart';
 
 class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -13,20 +14,17 @@ class LoginController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  final ApiClient _apiClient = ApiClient();
+  final AuthRepository _authRepository = AuthRepository();
 
   Future<bool> login() async {
     isLoading.value = true;
     errorMessage.value = '';
 
     try {
-      // Dữ liệu truyền đi
-      final Map<String, dynamic> loginData = {
-        "username": usernameController.text.trim(),
-        "password": passwordController.text.trim(),
-      };
-
-      final response = await _apiClient.dio.post('/login', data: loginData);
+      final response = await _authRepository.login(
+        usernameController.text.trim(),
+        passwordController.text.trim(),
+      );
 
       return response.statusCode == 200;
     } catch (e) {
@@ -39,9 +37,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> onLoginPressed() async {
-    if (!(formKey.currentState?.validate() ?? false)) {
-      return;
-    }
+    if (!(formKey.currentState?.validate() ?? false)) return;
 
     final success = await login();
 

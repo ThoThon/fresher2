@@ -4,6 +4,7 @@ import '../../../category/category_list/repositories/category_repository.dart';
 
 import '../../../category/entities/category.dart';
 import '../../models/product_model.dart';
+import '../../models/product_request.dart';
 import '../repositories/product_form_repository.dart';
 
 class ProductFormController extends GetxController {
@@ -55,27 +56,28 @@ class ProductFormController extends GetxController {
     selectedFormCategoryId.value = product.category?.id;
   }
 
-  Map<String, dynamic> _getFormData() {
-    return {
-      "name": nameController.text.trim(),
-      "code": codeController.text.trim(),
-      "price": double.tryParse(priceController.text) ?? 0.0,
-      "stock": int.tryParse(stockController.text) ?? 0,
-      "description": descController.text.trim(),
-      "category_id": selectedFormCategoryId.value,
-      "image": "https://example.com/new-image.png",
-    };
+  ProductRequest _getFormData() {
+    return ProductRequest(
+      id: initialProduct?.id,
+      name: nameController.text.trim(),
+      code: codeController.text.trim(),
+      price: double.tryParse(priceController.text) ?? 0.0,
+      stock: int.tryParse(stockController.text) ?? 0,
+      description: descController.text.trim(),
+      categoryId: selectedFormCategoryId.value,
+    );
   }
 
   Future<void> submitForm() async {
-    if (!formKey.currentState!.validate()) return;
+    if (formKey.currentState?.validate() == false) {
+      return;
+    }
 
     isLoading.value = true;
     try {
       bool success;
       if (initialProduct != null) {
-        success =
-            await _repository.updateProduct(initialProduct!.id, _getFormData());
+        success = await _repository.updateProduct(_getFormData());
       } else {
         success = await _repository.createProduct(_getFormData());
       }

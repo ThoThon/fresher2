@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../entities/category.dart';
+import '../../models/category_request.dart';
 import '../repositories/category_form_repository.dart';
 
 class CategoryFormController extends GetxController {
@@ -32,9 +33,10 @@ class CategoryFormController extends GetxController {
     try {
       bool success;
       if (editingCategory != null) {
-        success = await _repo.updateCategory(editingCategory!.id, name);
+        final request = CategoryRequest(id: editingCategory!.id, name: name);
+        success = await _repo.updateCategory(request);
       } else {
-        success = await _repo.createCategory(name);
+        success = await _repo.createCategory(CategoryRequest(name: name));
       }
 
       if (success) {
