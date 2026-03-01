@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import '../../../category/category_list/repositories/category_repository.dart';
 import '../../../category/entities/category.dart';
 import '../../entities/product.dart';
@@ -15,28 +16,29 @@ class ProductListController extends GetxController {
   final products = <Product>[].obs;
   final categories = <Category>[].obs;
   final isLoading = false.obs;
-  final isLoadMore = false.obs;
+
+  var currentPage = 1;
+  final int pageSize = 10;
+  static const int defaultPageNumber = 1;
+
+  final refreshController = RefreshController(initialRefresh: false);
+
   final searchQuery = "".obs;
   final selectedCategoryId = Rxn<int>();
-  final currentPage = 1.obs;
-  final hasMore = true.obs;
-  final scrollController = ScrollController();
-
   Timer? _debounce;
 
   @override
   void onInit() {
     super.onInit();
-    scrollController.addListener(_onScroll);
     fetchCategories();
-    fetchProducts(isRefresh: true);
+    fetchProducts();
   }
 
-  void _onScroll() {
-    if (scrollController.position.atEdge &&
-        scrollController.position.pixels > 0) {
-      loadMore();
-    }
+  @override
+  void onClose() {
+    _debounce?.cancel();
+    refreshController.dispose();
+    super.onClose();
   }
 
   Future<void> fetchCategories() async {
@@ -44,71 +46,75 @@ class ProductListController extends GetxController {
       final result = await _categoryRepo.getCategories();
       categories.assignAll(result);
     } catch (e) {
-      Get.snackbar("Lỗi", "Không thể tải danh sách danh mục");
+      debugPrint("Lỗi fetchCategories: $e");
     }
   }
 
-  Future<void> fetchProducts({bool isRefresh = false}) async {
-    if (isRefresh) {
-      currentPage.value = 1;
-      hasMore.value = true;
+  Future<void> fetchProducts({bool isLoadMore = false}) async {
+    if (!isLoadMore) {
       isLoading.value = true;
-    } else {
-      isLoadMore.value = true;
     }
 
     try {
-      var result = await _productRepo.getProducts(
-        page: currentPage.value,
+      final page = isLoadMore ? currentPage + 1 : defaultPageNumber;
+
+      final result = await _productRepo.getProducts(
+        page: page,
+        limit: pageSize,
         keyword: searchQuery.value,
         categoryId: selectedCategoryId.value,
       );
 
-      if (isRefresh) {
-        products.assignAll(result);
+      if (isLoadMore) {
+        if (result.isEmpty) {
+          refreshController.loadNoData(); 
+        } else {
+          products.addAll(result);
+          refreshController.loadComplete();
+        }
       } else {
-        products.addAll(result);
+        products.assignAll(result);
+        refreshController.refreshCompleted();
+        refreshController.resetNoData(); 
       }
 
-      if (result.length < 10) {
-        hasMore.value = false;
-      }
+      currentPage = page;
     } catch (e) {
-      Get.snackbar("Lỗi", "Không thể tải danh sách sản phẩm");
+      debugPrint("Lỗi fetchProducts: $e");
+      if (isLoadMore) {
+        refreshController.loadFailed();
+      } else {
+        refreshController.refreshFailed();
+      }
     } finally {
       isLoading.value = false;
-      isLoadMore.value = false;
     }
   }
 
+  void onRefresh() async => await fetchProducts(isLoadMore: false);
+
+  void onLoadMore() async => await fetchProducts(isLoadMore: true);
+
   void filterByCategory(int? categoryId) {
     selectedCategoryId.value = categoryId;
-    fetchProducts(isRefresh: true);
+    onRefresh();
   }
 
   void onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
       searchQuery.value = query;
-      fetchProducts(isRefresh: true);
+      onRefresh();
     });
   }
-
-  void loadMore() {
-    if (!isLoading.value && !isLoadMore.value && hasMore.value) {
-      currentPage.value++;
-      fetchProducts();
-    }
-  }
-
-  Future<void> refreshProducts() async => await fetchProducts(isRefresh: true);
 
   void confirmDelete(int id) {
     Get.defaultDialog(
       title: "Xác nhận xóa",
       middleText: "Bạn có chắc chắn muốn xóa sản phẩm này không?",
       textConfirm: "Xóa",
-      textCancel: "Hủy",
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
       onConfirm: () async {
         Get.back();
         bool success = await _productRepo.deleteProduct(id);
@@ -118,12 +124,5 @@ class ProductListController extends GetxController {
         }
       },
     );
-  }
-
-  @override
-  void onClose() {
-    _debounce?.cancel();
-    scrollController.dispose();
-    super.onClose();
   }
 }
