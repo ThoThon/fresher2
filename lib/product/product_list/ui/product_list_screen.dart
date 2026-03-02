@@ -75,11 +75,13 @@ class ProductListScreen extends GetView<ProductListController> {
   Widget _buildCategoryFilter() {
     return SizedBox(
       height: 60,
-      child: Obx(() => ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            itemCount: controller.categories.length + 1,
-            itemBuilder: (context, index) {
+      child: Obx(
+        () => ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          itemCount: controller.categories.length + 1,
+          itemBuilder: (context, index) {
+            return Obx(() {
               final isAll = index == 0;
               final label =
                   isAll ? "Tất cả" : controller.categories[index - 1].name;
@@ -96,14 +98,10 @@ class ProductListScreen extends GetView<ProductListController> {
                   decoration: BoxDecoration(
                     color: isSelected ? const Color(0xFFf24e1e) : Colors.white,
                     borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      if (isSelected)
-                        const BoxShadow(
-                          color: Color(0xFFf24e1e),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        )
-                    ],
+                    border: Border.all(
+                      color: isSelected ? Colors.transparent : Colors.grey,
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     label,
@@ -115,8 +113,10 @@ class ProductListScreen extends GetView<ProductListController> {
                   ),
                 ),
               );
-            },
-          )),
+            });
+          },
+        ),
+      ),
     );
   }
 
@@ -124,7 +124,6 @@ class ProductListScreen extends GetView<ProductListController> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
         leading: ClipRRect(

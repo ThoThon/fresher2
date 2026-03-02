@@ -67,7 +67,7 @@ class ProductListController extends GetxController {
 
       if (isLoadMore) {
         if (result.isEmpty) {
-          refreshController.loadNoData(); 
+          refreshController.loadNoData();
         } else {
           products.addAll(result);
           refreshController.loadComplete();
@@ -75,7 +75,7 @@ class ProductListController extends GetxController {
       } else {
         products.assignAll(result);
         refreshController.refreshCompleted();
-        refreshController.resetNoData(); 
+        refreshController.resetNoData();
       }
 
       currentPage = page;
