@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import '../../routes/app_routes.dart';
 import '../controller/home_controller.dart';
-import '../../product/ui/product_list_screen.dart';
+import '../../product/product_list/ui/product_list_screen.dart';
 import '../../category/category_list/ui/category_screen.dart';
 
 class HomeScreen extends GetView<HomeController> {
